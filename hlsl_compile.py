@@ -1,13 +1,22 @@
 import glob
 import os
+import sys
 import subprocess
-
-FXC_PATH = 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64'
 
 
 def main():
-    hlsl_files = glob.glob('*/**/*.hlsl', recursive=True)
-    print(hlsl_files)
+    args = sys.argv
+    platform = 'x86' if '-x86' in args else 'x64'
+
+    FXC_CANDIDATE_PATH = glob.glob(
+        f'C:/Program Files (x86)/Windows Kits/10/bin/*/{platform}/fxc.exe', recursive=True
+    )
+    if FXC_CANDIDATE_PATH == []:
+        print('not found fxc.exe')
+        return
+    FXC_PATH = FXC_CANDIDATE_PATH[-1]
+
+    hlsl_files = glob.glob('./**/*.hlsl', recursive=True)
 
     for hlsl_file in hlsl_files:
         hlsl_file = hlsl_file.replace('\\', '/')
@@ -38,6 +47,7 @@ def main():
                 '/E', 'main',
                 '/T', shader_type,
                 '/Fh', f'{hlsl_directory}/{hlsl_file_name}.h',
+                '/Fo', f'{hlsl_directory}/{hlsl_file_name}.bin',
                 hlsl_file
             ]
             subprocess.run(command, check=True)
