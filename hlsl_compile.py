@@ -15,6 +15,7 @@ def main():
         print('not found fxc.exe')
         return
     FXC_PATH = FXC_CANDIDATE_PATH[-1]
+    print(FXC_PATH)
 
     hlsl_files = glob.glob('./**/*.hlsl', recursive=True)
 
@@ -43,7 +44,7 @@ def main():
 
         try:
             command = [
-                f'{FXC_PATH}/fxc.exe',
+                FXC_PATH,
                 '/E', 'main',
                 '/T', shader_type,
                 '/Fh', f'{hlsl_directory}/{hlsl_file_name}.h',
